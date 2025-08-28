@@ -9,7 +9,10 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { name, description, image, price, duration } = body;
-
+    if (!name || !price || !duration) {
+      return NextResponse.json({ error: "Missing required fields: name, price, duration" }, { status: 400 });
+    }
+    const now = new Date();
     const newPackage = await db
       .insert(packages)
       .values({
@@ -19,9 +22,8 @@ export async function POST(request: NextRequest) {
         image,
         price,
         duration,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdBy: "admin", // Replace with actual user ID from auth
+        createdAt: now,
+        updatedAt: now,
       })
       .returning();
 

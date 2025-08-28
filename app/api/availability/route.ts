@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       console.error("Error checking overlaps:", overlapError);
     }
 
-    const now = new Date(); // Use Date object instead of Date.now()
+    const now = new Date();
     const newSlot = {
       id: nanoid(),
       date,

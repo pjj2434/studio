@@ -3,14 +3,57 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
+interface Package {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  price: number;
+  duration: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+}
 
 export default function Home() {
   const [activeArticle, setActiveArticle] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setIsLoaded(true);
   }, []);
+
+  // Fetch packages when work section is opened
+  const fetchPackages = async () => {
+    if (packages.length > 0) return; // Don't fetch if already loaded
+    
+    setLoading(true);
+    try {
+      const response = await fetch('/api/packages');
+      if (response.ok) {
+        const data = await response.json();
+        setPackages(data);
+      }
+    } catch (error) {
+      console.error('Error fetching packages:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleWorkClick = () => {
+    setActiveArticle('work');
+    fetchPackages();
+  };
+
+  const handleBookNow = (packageId: string) => {
+    router.push(`/booking?package=${packageId}`);
+  };
 
   // Simple SVG Icons
   const SparklesIcon = () => (
@@ -55,59 +98,59 @@ export default function Home() {
       ),
     },
     work: {
-      title: 'My Work',
+      title: 'Our Packages',
       content: (
         <div className="space-y-6">
           <p className="text-muted-foreground leading-relaxed">
-            Here's a showcase of some of my recent projects and work. Each project 
-            represents a unique challenge and creative solution.
+            Choose from our carefully crafted packages designed to meet your needs.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="aspect-square relative rounded-lg overflow-hidden group cursor-pointer">
-              <Image
-                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=400&fit=crop&crop=center"
-                alt="Project 1 - Analytics Dashboard"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-white font-semibold text-lg">Analytics Dashboard</span>
-              </div>
+          
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
-            <div className="aspect-square relative rounded-lg overflow-hidden group cursor-pointer">
-              <Image
-                src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&h=400&fit=crop&crop=center"
-                alt="Project 2 - Mobile App"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-white font-semibold text-lg">Mobile App</span>
-              </div>
+          ) : packages.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6">
+              {packages.map((pkg) => (
+                <div key={pkg.id} className="border border-border rounded-lg overflow-hidden bg-card/50">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-1/3">
+                      <div className="aspect-video md:aspect-square relative">
+                        <Image
+                          src={pkg.image || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=400&fit=crop&crop=center"}
+                          alt={pkg.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    </div>
+                    <div className="md:w-2/3 p-6 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-xl font-semibold text-foreground mb-2">{pkg.name}</h3>
+                        <p className="text-muted-foreground mb-4 leading-relaxed">{pkg.description}</p>
+                        <div className="flex items-center gap-4 mb-4">
+                          <span className="text-2xl font-bold text-primary">${pkg.price}</span>
+                          <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
+                            {pkg.duration}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleBookNow(pkg.id)}
+                        className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition-colors font-medium self-start"
+                      >
+                        Book Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="aspect-square relative rounded-lg overflow-hidden group cursor-pointer">
-              <Image
-                src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=400&fit=crop&crop=center"
-                alt="Project 3 - E-commerce Platform"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-white font-semibold text-lg">E-commerce Platform</span>
-              </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">No packages available at the moment.</p>
             </div>
-            <div className="aspect-square relative rounded-lg overflow-hidden group cursor-pointer">
-              <Image
-                src="https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=400&h=400&fit=crop&crop=center"
-                alt="Project 4 - Web Application"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-white font-semibold text-lg">Web Application</span>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       ),
     },
@@ -252,8 +295,6 @@ export default function Home() {
         />
         {/* Pattern overlay */}
         <div 
-          
-          
         />
       </div>
       
@@ -290,7 +331,7 @@ export default function Home() {
             {Object.keys(articles).map((key) => (
               <button
                 key={key}
-                onClick={() => setActiveArticle(key)}
+                onClick={() => key === 'work' ? handleWorkClick() : setActiveArticle(key)}
                 className={`
                   px-4 py-2 text-sm md:text-base font-medium border rounded-lg
                   transition-all duration-200 backdrop-blur-sm
@@ -316,7 +357,7 @@ export default function Home() {
             onClick={() => setActiveArticle(null)}
           />
           
-          <div className="relative bg-card/22 backdrop-blur-md rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden border border-black/20">
+          <div className="relative bg-card/70 backdrop-blur-md rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden border border-black/20">
             <div className="flex items-center justify-between p-6 border-b border-black/20">
               <h2 className="text-2xl font-bold text-card-foreground">
                 {articles[activeArticle as keyof typeof articles].title}

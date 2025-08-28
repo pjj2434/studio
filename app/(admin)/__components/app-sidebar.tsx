@@ -1,7 +1,7 @@
 // components/app-sidebar.tsx
 "use client";
 
-import { Calendar, Clock, Inbox, PackageOpen, Search, Settings, User2, ChevronUp } from "lucide-react";
+import { Calendar, Clock, Inbox, PackageOpen, Search, Settings, User2, ChevronUp, Book } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 
@@ -36,6 +36,11 @@ const items = [
     title: "Availability",
     url: "/availability",
     icon: Clock,
+  },
+  {
+    title: "Bookings",
+    url: "/bookings",
+    icon: Book,
   },
 ];
 

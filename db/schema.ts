@@ -51,26 +51,53 @@ export const verification = sqliteTable("verification", {
 
 // New packages table
 // lib/schema.ts
-export const packages = sqliteTable("packages", {
-  id: text("id").primaryKey(),
+
+export const packages = sqliteTable('packages', {
+  id: text('id').primaryKey(),
   name: text('name').notNull(),
-  description: text('description').notNull(),
-  image: text('image').notNull(),
+  description: text('description'),
+  duration: integer('duration').notNull(), // hours
   price: real('price').notNull(),
-  duration: real('duration').notNull(),
+  image: text('image'), // Add this field if you're using images
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
-  createdBy: text('created_by') // Made optional and no foreign key
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
 });
 
-// lib/schema.ts
-export const availability = sqliteTable("availability", {
-  id: text("id").primaryKey(),
-  date: text("date").notNull(),
-  startTime: text("start_time").notNull(),
-  endTime: text("end_time").notNull(),
-  isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+export const bookings = sqliteTable('bookings', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone').notNull(),
+  message: text('message'),
+  date: text('date').notNull(),
+  startTime: text('start_time').notNull(),
+  endTime: text('end_time').notNull(),
+  packageId: text('package_id').notNull(),
+  availabilityId: text('availability_id'),
+  duration: integer('duration').notNull(), // Make sure this matches your DB
+  status: text('status').notNull().default('pending'),
+  adminNotes: text('admin_notes'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
+});
+
+export const availability = sqliteTable('availability', {
+  id: text('id').primaryKey(),
+  date: text('date').notNull(),
+  startTime: text('start_time').notNull(),
+  endTime: text('end_time').notNull(),
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
+});
+
+export const emailNotifications = sqliteTable('email_notifications', {
+  id: text('id').primaryKey(),
+  bookingId: text('booking_id').notNull(),
+  type: text('type').notNull(),
+  recipient: text('recipient').notNull(),
+  status: text('status').notNull(),
+  sentAt: integer('sent_at', { mode: 'timestamp' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
 });
