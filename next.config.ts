@@ -26,6 +26,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '**.radar.io', // Adjust to the actual CDN domains used
       },
+       {
+        protocol: 'https',
+        hostname: 'images.unsplash.com', // Adjust to the actual CDN domains used
+      },
     ],
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 31536000, // 1 year

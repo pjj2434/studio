@@ -31,6 +31,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.1",
     "drizzle-orm": "^0.44.5",
+    "heroicons": "^2.2.0",
     "lucide-react": "^0.542.0",
     "nanoid": "^5.1.5",
     "next": "15.5.2",
