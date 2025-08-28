@@ -252,11 +252,8 @@ export default function Home() {
         />
         {/* Pattern overlay */}
         <div 
-          className="absolute inset-0 opacity-30"
-          style={{
-            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
-            backgroundSize: '20px 20px'
-          }}
+          
+          
         />
       </div>
       
