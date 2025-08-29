@@ -385,14 +385,14 @@ export default function Home() {
             onClick={() => setActiveArticle(null)}
           />
           {/* Modal with fade-in */}
-          <div className="relative bg-card/70 backdrop-blur-md rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden border border-black/20 animate-modal-fade-in will-change-transform" style={{backfaceVisibility: 'hidden', willChange: 'transform, opacity'}}>
+          <div className="relative modal-bg-custom text-white backdrop-blur-md rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden border border-black/20 animate-modal-fade-in will-change-transform" style={{backfaceVisibility: 'hidden', willChange: 'transform, opacity'}}>
             <div className="flex items-center justify-between p-6 border-b border-black/20">
-              <h2 className="text-2xl font-bold text-card-foreground">
+              <h2 className="text-2xl font-bold">
                 {articles[showModal as keyof typeof articles].title}
               </h2>
               <button
                 onClick={() => setActiveArticle(null)}
-                className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted"
+                className="p-2 text-white hover:text-gray-200 transition-colors rounded-md hover:bg-muted"
                 aria-label="Close article"
               >
                 <XMarkIcon />
@@ -406,6 +406,30 @@ export default function Home() {
       )}
 
       <style jsx>{`
+        .modal-bg-custom {
+          background: rgba(18, 18, 20, 0.6);
+        }
+        .modal-bg-custom,
+        .modal-bg-custom * {
+          color: #fff !important;
+        }
+        /* Custom scrollbar for modal content */
+        .modal-bg-custom .p-6 {
+          scrollbar-width: thin;
+          scrollbar-color: #444 #222;
+        }
+        .modal-bg-custom .p-6::-webkit-scrollbar {
+          width: 8px;
+          background: #222;
+          border-radius: 8px;
+        }
+        .modal-bg-custom .p-6::-webkit-scrollbar-thumb {
+          background: #444;
+          border-radius: 8px;
+        }
+        .modal-bg-custom .p-6::-webkit-scrollbar-thumb:hover {
+          background: #666;
+        }
         .door-anim-container {
           position: relative;
           width: 100%;
