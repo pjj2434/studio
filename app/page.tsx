@@ -323,37 +323,37 @@ export default function Home() {
           relative z-10 min-h-screen flex items-center justify-center p-4
         `}
       >
-        <div className={`w-full max-w-4xl text-center space-y-8 main-content-door-wrap${activeArticle ? ' main-content-shrink-fade' : ''}`}>
-          <div className="door-anim-horizontal-content refined-door-layout">
+        <div className={`w-full max-w-[1100px] mx-auto text-center space-y-14 main-content-door-wrap${activeArticle ? ' main-content-shrink-fade' : ''}`}> 
+          <div className="door-anim-horizontal-content refined-door-layout wide-door-layout">
             {/* Top: Logo, animates up with line */}
-            <div className={`door-logo-area${isLoaded ? ' door-logo-area-animated' : ''}`}>
+            <div className={`door-logo-area${isLoaded ? ' door-logo-area-animated' : ''}`} style={{ marginBottom: '2.5rem' }}>
               <div className="flex justify-center">
-                <div className="p-4 border-2 border-black/30 rounded-lg backdrop-blur-sm bg-black/10">
+                <div className="p-6 border-2 border-black/30 rounded-lg backdrop-blur-sm bg-black/10">
                   <SparklesIcon />
                 </div>
               </div>
             </div>
             {/* Door Animation Container: absolutely positioned, lines and text animate independently */}
-            <div className="door-anim-container">
+            <div className="door-anim-container door-anim-container-wide mx-auto" style={{ height: '120px', marginBottom: '2.5rem', width: '100%' }}>
               {/* Top Line: absolutely positioned, animates up */}
               <div className={`door-divider door-divider-top-abs${isLoaded ? ' door-divider-top-abs-animated' : ''}`} />
               {/* Bottom Line: absolutely positioned, animates down */}
               <div className={`door-divider door-divider-bottom-abs${isLoaded ? ' door-divider-bottom-abs-animated' : ''}`} />
               {/* Text: absolutely positioned, fades in as lines move */}
               <div
-                className={`door-anim-text${isLoaded ? ' door-anim-text-visible' : ''}`}
+                className={`door-anim-text${isLoaded ? ' door-anim-text-visible' : ''} door-anim-text-wide`}
                 style={!isLoaded ? { transition: 'none', opacity: 0 } : {}}
               >
-                <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight drop-shadow-lg">
+                <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight drop-shadow-lg mb-6">
                   LTL Recording Studio
                 </h1>
-                <p className="text-lg md:text-xl text-white/90 max-w-md mx-auto drop-shadow-md">
+                <p className="text-lg md:text-xl text-white/90 max-w-4xl mx-auto drop-shadow-md mt-6">
                   A modern, minimalist template for showcasing your work and connecting with your audience.
                 </p>
               </div>
             </div>
             {/* Bottom: Buttons, animates down with line */}
-            <nav className={`flex flex-wrap justify-center gap-4 md:gap-8 main-content-anim door-nav-area${isLoaded ? ' door-nav-area-animated door-nav-area-unclipped' : ''}`}>
+            <nav className={`flex flex-wrap justify-center gap-4 md:gap-8 main-content-anim door-nav-area${isLoaded ? ' door-nav-area-animated door-nav-area-unclipped' : ''}`} style={{ marginTop: '2.5rem' }}>
               {Object.keys(articles).map((key) => (
                 <button
                   key={key}
@@ -405,7 +405,53 @@ export default function Home() {
         </div>
       )}
 
+      <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet" />
       <style jsx>{`
+        .wide-door-layout {
+          width: 100%;
+        }
+        .door-anim-container-wide {
+          width: 100%;
+        }
+        .door-anim-text-wide {
+          max-width: 1000px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        .door-anim-text-wide p {
+          max-width: 900px;
+        }
+        @media (max-width: 900px) {
+          .wide-door-layout,
+          .door-anim-container-wide {
+            max-width: 98vw;
+            width: 98vw;
+          }
+          .door-anim-text-wide {
+            max-width: 96vw;
+          }
+          .door-anim-text-wide p {
+            max-width: 92vw;
+          }
+        }
+        @media (max-width: 640px) {
+          .wide-door-layout,
+          .door-anim-container-wide {
+            max-width: 100vw;
+            width: 100vw;
+          }
+          .door-anim-text-wide {
+            max-width: 100vw;
+          }
+          .door-anim-text-wide p {
+            max-width: 96vw;
+          }
+        }
+        .main-content-door-wrap, .main-content-door-wrap * {
+          font-family: 'Source Sans Pro', Arial, sans-serif !important;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+        }
         .modal-bg-custom {
           background: rgba(18, 18, 20, 0.6);
         }
@@ -452,14 +498,14 @@ export default function Home() {
           transform: translateY(0);
         }
         .door-divider-top-abs-animated {
-          transform: translateY(-110px);
+          transform: translateY(-150px);
         }
         .door-divider-bottom-abs {
           top: 50%;
           transform: translateY(0);
         }
         .door-divider-bottom-abs-animated {
-          transform: translateY(120px);
+          transform: translateY(150px);
         }
         .door-anim-text {
           position: absolute;
@@ -481,13 +527,10 @@ export default function Home() {
         }
         /* Door animation - horizontal split, overlays main content */
         .refined-door-layout {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          width: 60vw;
+          position: static;
+          width: 100%;
           min-width: 320px;
-          max-width: 480px;
+          max-width: none;
           z-index: 20;
           pointer-events: none;
           display: flex;
