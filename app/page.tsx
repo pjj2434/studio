@@ -20,12 +20,23 @@ interface Package {
 export default function Home() {
   const [activeArticle, setActiveArticle] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showDoor, setShowDoor] = useState(true);
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    setIsLoaded(true);
+    // 1. Animate lines apart, 2. Fade/scale in content, 3. Remove door overlay
+    const timer1 = setTimeout(() => {
+      setIsLoaded(true);
+    }, 900); // start content fade/scale in as lines move
+    const timer2 = setTimeout(() => {
+      setShowDoor(false);
+    }, 1400); // remove door overlay
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
   }, []);
 
   // Fetch packages when work section is opened
@@ -280,84 +291,133 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen relative overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0">
+    <main className="min-h-screen relative overflow-hidden bg-black">
+      {/* Background Gradient Overlay */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-transparent" />
         <Image
-          src="/t.jpg"
+          src="/background.jpeg"
           alt="Space background"
           fill
-          className={`
-            object-cover transition-all duration-300 ease-out
-            ${activeArticle ? 'scale-105 blur-sm' : ''}
-          `}
+          className={`object-cover transition-all duration-500 ease-out ${activeArticle ? 'scale-105 blur-sm' : ''}`}
           priority
         />
-        {/* Pattern overlay */}
-        <div 
-        />
+        {/* Black overlay that fades to 30% opacity after animation */}
+        <div className={`absolute inset-0 bg-black transition-opacity duration-700 ease-in-out ${!showDoor ? 'opacity-80' : 'opacity-100'}`}></div>
       </div>
-      
-      {/* Main Content */}
+
+      {/* Main Content with Door Animation */}
       <div
         className={`
           relative z-10 min-h-screen flex items-center justify-center p-4
           transition-all duration-300 ease-out
           ${activeArticle ? 'scale-105 blur-sm' : ''}
-          ${isLoaded ? 'animate-fade-in' : 'opacity-0'}
         `}
       >
-        <div className="w-full max-w-4xl text-center space-y-8">
-          {/* Header */}
-          <div className="space-y-4">
-            <div className="flex justify-center">
-              <div className="p-4 border-2 border-black/30 rounded-lg backdrop-blur-sm bg-black/10">
-                <SparklesIcon />
+        <div className="w-full max-w-4xl text-center space-y-8 main-content-door-wrap">
+          {/* Door Animation - horizontal split, overlays main content */}
+          {showDoor ? (
+            <div className="door-anim-horizontal-content refined-door-layout">
+              {/* Top: Logo, animates up with line */}
+              <div className={`door-logo-area${isLoaded ? ' door-logo-area-animated' : ''}`}>
+                <div className="flex justify-center">
+                  <div className="p-4 border-2 border-black/30 rounded-lg backdrop-blur-sm bg-black/10">
+                    <SparklesIcon />
+                  </div>
+                </div>
               </div>
+              {/* Top Line: always visible, animates up with logo, then stays */}
+              <div className={`door-divider door-divider-top${isLoaded ? ' door-divider-top-animated' : ''}`} />
+              {/* Middle: Header/Description, revealed between lines */}
+              <div className={`door-content-clip-refined${isLoaded ? ' door-content-clip-reveal-refined' : ''}`}> 
+                <div className={`space-y-2 main-content-anim door-content-anim${isLoaded ? ' door-content-visible' : ''}`}> 
+                  <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight drop-shadow-lg">
+                    Dimension
+                  </h1>
+                  <p className="text-lg md:text-xl text-white/90 max-w-md mx-auto drop-shadow-md">
+                    A modern, minimalist template for showcasing your work and connecting with your audience.
+                  </p>
+                </div>
+              </div>
+              {/* Bottom Line: always visible, animates down with buttons, then stays */}
+              <div className={`door-divider door-divider-bottom${isLoaded ? ' door-divider-bottom-animated' : ''}`} />
+              {/* Bottom: Buttons, animates down with line */}
+              <nav className={`flex flex-wrap justify-center gap-4 md:gap-8 main-content-anim door-nav-area${isLoaded ? ' door-nav-area-animated' : ''}`}>
+                {Object.keys(articles).map((key) => (
+                  <button
+                    key={key}
+                    onClick={() => key === 'work' ? handleWorkClick() : setActiveArticle(key)}
+                    className={`
+                      px-4 py-2 text-sm md:text-base font-medium border rounded-lg
+                      transition-all duration-200 backdrop-blur-sm
+                      focus:outline-none focus:ring-2 focus:ring-black/50 focus:ring-offset-2 focus:ring-offset-transparent
+                      ${activeArticle === key 
+                        ? 'bg-white text-primary border-white shadow-lg' 
+                        : 'text-white border-black/30 bg-black/10 hover:bg-black/20 hover:border-black/50'
+                      }
+                    `}
+                  >
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                  </button>
+                ))}
+              </nav>
             </div>
-            
-            <div className="space-y-2">
-              <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight drop-shadow-lg">
-                Dimension
-              </h1>
-              <p className="text-lg md:text-xl text-white/90 max-w-md mx-auto drop-shadow-md">
-                A modern, minimalist template for showcasing your work and connecting with your audience.
-              </p>
+          ) : null}
+          {!showDoor && (
+            <div className="door-anim-horizontal-content refined-door-layout">
+              <div className="door-logo-area door-logo-area-animated">
+                <div className="flex justify-center">
+                  <div className="p-4 border-2 border-black/30 rounded-lg backdrop-blur-sm bg-black/10">
+                    <SparklesIcon />
+                  </div>
+                </div>
+              </div>
+              <div className="door-divider door-divider-top door-divider-top-animated" />
+              <div className="door-content-clip-refined door-content-clip-reveal-refined door-content-clip-unclipped">
+                <div className="space-y-2 main-content-anim door-content-anim door-content-visible">
+                  <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight drop-shadow-lg">
+                    Dimension
+                  </h1>
+                  <p className="text-lg md:text-xl text-white/90 max-w-md mx-auto drop-shadow-md">
+                    A modern, minimalist template for showcasing your work and connecting with your audience.
+                  </p>
+                </div>
+              </div>
+              <div className="door-divider door-divider-bottom door-divider-bottom-animated" />
+              <nav className="flex flex-wrap justify-center gap-4 md:gap-8 main-content-anim door-nav-area door-nav-area-animated door-nav-area-unclipped">
+                {Object.keys(articles).map((key) => (
+                  <button
+                    key={key}
+                    onClick={() => key === 'work' ? handleWorkClick() : setActiveArticle(key)}
+                    className={`
+                      px-4 py-2 text-sm md:text-base font-medium border rounded-lg
+                      transition-all duration-200 backdrop-blur-sm
+                      focus:outline-none focus:ring-2 focus:ring-black/50 focus:ring-offset-2 focus:ring-offset-transparent
+                      ${activeArticle === key 
+                        ? 'bg-white text-primary border-white shadow-lg' 
+                        : 'text-white border-black/30 bg-black/10 hover:bg-black/20 hover:border-black/50'
+                      }
+                    `}
+                  >
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                  </button>
+                ))}
+              </nav>
             </div>
-          </div>
-          
-          {/* Navigation */}
-          <nav className="flex flex-wrap justify-center gap-4 md:gap-8">
-            {Object.keys(articles).map((key) => (
-              <button
-                key={key}
-                onClick={() => key === 'work' ? handleWorkClick() : setActiveArticle(key)}
-                className={`
-                  px-4 py-2 text-sm md:text-base font-medium border rounded-lg
-                  transition-all duration-200 backdrop-blur-sm
-                  focus:outline-none focus:ring-2 focus:ring-black/50 focus:ring-offset-2 focus:ring-offset-transparent
-                  ${activeArticle === key 
-                    ? 'bg-white text-primary border-white shadow-lg' 
-                    : 'text-white border-black/30 bg-black/10 hover:bg-black/20 hover:border-black/50'
-                  }
-                `}
-              >
-                {key.charAt(0).toUpperCase() + key.slice(1)}
-              </button>
-            ))}
-          </nav>
+          )}
         </div>
       </div>
 
       {/* Article Modal */}
       {activeArticle && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-slide-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Overlay with fade-in */}
           <div
-            className="absolute inset-0 bg-black/50"
+            className="absolute inset-0 bg-black/50 animate-overlay-fade-in"
             onClick={() => setActiveArticle(null)}
           />
-          
-          <div className="relative bg-card/70 backdrop-blur-md rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden border border-black/20">
+          {/* Modal with bounce-in */}
+          <div className="relative bg-card/70 backdrop-blur-md rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden border border-black/20 animate-modal-fade-in will-change-transform" style={{backfaceVisibility: 'hidden', willChange: 'transform, opacity'}}>
             <div className="flex items-center justify-between p-6 border-b border-black/20">
               <h2 className="text-2xl font-bold text-card-foreground">
                 {articles[activeArticle as keyof typeof articles].title}
@@ -370,7 +430,6 @@ export default function Home() {
                 <XMarkIcon />
               </button>
             </div>
-            
             <div className="p-6 overflow-y-auto max-h-[calc(80vh-120px)]">
               {articles[activeArticle as keyof typeof articles].content}
             </div>
@@ -379,26 +438,160 @@ export default function Home() {
       )}
 
       <style jsx>{`
-        @keyframes slide-in {
-          from {
+        /* Door animation - horizontal split, overlays main content */
+        .refined-door-layout {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          width: 60vw;
+          min-width: 320px;
+          max-width: 480px;
+          z-index: 20;
+          pointer-events: none;
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+        .door-logo-area {
+          margin-bottom: 1.5rem;
+          transition: transform 0.8s cubic-bezier(0.77,0,0.175,1);
+        }
+        .door-logo-area-animated {
+          transform: translateY(-48px);
+        }
+        .door-divider {
+          width: 100%;
+          height: 1px;
+          background: linear-gradient(90deg, #fff 70%, #aaa 100%);
+          border-radius: 1px;
+          box-shadow: 0 0 2px 0 #fff6;
+          transition: transform 0.8s cubic-bezier(0.77,0,0.175,1);
+        }
+        .door-divider-top {
+          /* initial: center */
+        }
+        .door-divider-top-animated {
+          transform: translateY(-48px);
+        }
+        .door-divider-bottom {
+          /* initial: center */
+        }
+        .door-divider-bottom-animated {
+          transform: translateY(48px);
+        }
+        .door-content-clip-refined {
+          width: 100%;
+          height: 0;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+          opacity: 0;
+          transition: height 0.4s cubic-bezier(0.77,0,0.175,1), opacity 0.3s cubic-bezier(0.77,0,0.175,1);
+        }
+        .door-content-clip-reveal-refined {
+          height: 92px;
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .door-content-clip-unclipped {
+          height: auto !important;
+          overflow: visible !important;
+          pointer-events: auto !important;
+        }
+        .door-nav-area {
+          margin-top: 1.5rem;
+          transition: transform 0.8s cubic-bezier(0.77,0,0.175,1);
+        }
+        .door-nav-area-animated {
+          transform: translateY(48px);
+        }
+        .door-nav-area-unclipped {
+          pointer-events: auto !important;
+        }
+        .door-content-anim {
+          opacity: 0;
+          transform: scale(1.04);
+          transition: opacity 0.5s cubic-bezier(0.77,0,0.175,1), transform 0.5s cubic-bezier(0.77,0,0.175,1);
+        }
+        .door-content-visible {
+          opacity: 1;
+          transform: scale(1);
+        }
+        .door-half {
+          position: absolute;
+          left: 0;
+          width: 100%;
+          height: 4px;
+          background: white;
+          border-radius: 2px;
+          box-shadow: 0 0 24px 4px white;
+        }
+        .door-half-top {
+          top: 0;
+          animation: door-half-top-open 1.1s cubic-bezier(0.77,0,0.175,1) forwards;
+        }
+        .door-half-bottom {
+          bottom: 0;
+          animation: door-half-bottom-open 1.1s cubic-bezier(0.77,0,0.175,1) forwards;
+        }
+        @keyframes door-half-top-open {
+          0% { transform: translateY(0); opacity: 1; }
+          60% { opacity: 1; }
+          100% { transform: translateY(-45vh); opacity: 0.7; }
+        }
+        @keyframes door-half-bottom-open {
+          0% { transform: translateY(0); opacity: 1; }
+          60% { opacity: 1; }
+          100% { transform: translateY(45vh); opacity: 0.7; }
+        }
+
+        /* Animate main content in sync with door */
+        .main-content-door-wrap {
+          position: relative;
+        }
+        .main-content-anim {
+          transition: opacity 0.7s cubic-bezier(0.77,0,0.175,1);
+        }
+        .door-content-anim {
+          opacity: 0;
+        }
+        .door-content-visible {
+          opacity: 1;
+          transition-delay: 0.2s;
+        }
+        /* End door animation */
+
+        /* Modal and overlay animations */
+        @keyframes modal-fade-in {
+          0% {
             opacity: 0;
-            transform: translateY(20px) scale(0.95);
+            transform: scale(0.97);
           }
-          to {
+          100% {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: scale(1);
           }
         }
-        
+        @keyframes overlay-fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
         @keyframes fade-in {
           from { opacity: 0; }
           to { opacity: 1; }
         }
-        
-        .animate-slide-in {
-          animation: slide-in 350ms ease-out forwards;
+        .animate-modal-fade-in {
+          animation: modal-fade-in 260ms cubic-bezier(0.4, 0.8, 0.2, 1) forwards;
         }
-        
+        .animate-overlay-fade-in {
+          animation: overlay-fade-in 220ms cubic-bezier(0.4, 0.8, 0.2, 1) forwards;
+        }
         .animate-fade-in {
           animation: fade-in 600ms ease-out 100ms both;
         }
